@@ -30,7 +30,7 @@ fun List<Any>.formatear():String{
     var cont = 0
     var listaFormateada = ""
     repeat(this.size){
-        if (this[cont] == this.size-1) {
+        if (cont == this.size-1) {
             listaFormateada += this[cont]
         }
         else{

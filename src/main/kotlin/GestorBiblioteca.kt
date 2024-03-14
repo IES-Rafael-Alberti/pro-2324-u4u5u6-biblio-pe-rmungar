@@ -106,6 +106,7 @@ class GestorBiblioteca {
                 5 -> mostrarLibros()
                 6 -> break
             }
+            println()
         }
     }
 }

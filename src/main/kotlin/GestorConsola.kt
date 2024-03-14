@@ -61,7 +61,7 @@ object GestorConsola {
 //      MOSTRAR LAS COLECCIONES DE LIBROS   ----------------------------------------------------------------------------
 
     fun mostrarMenuMostrarLibros():String{
-        mostrarPorConsola("Quieres ver: \n1    -   TODOS\n2    -   DISPONIBLES\n3    -    OCUPADOS")
+        mostrarPorConsola("Quieres ver: \n1    -   TODOS\n2    -   DISPONIBLES\n3    -   OCUPADOS")
         println()
         mostrarPorConsola("Ingresa el número de la opción: ")
         val tipo = readln().toInt()
