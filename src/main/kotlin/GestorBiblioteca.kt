@@ -1,12 +1,15 @@
 package org.pebiblioteca
 
+import kotlin.io.path.fileVisitor
+
 
 class GestorBiblioteca {
     private val catalogoDeLibros: MutableList<Libro> = mutableListOf()
-    private val registorDePrestamos: MutableList<Libro> = mutableListOf()
+
 
     //  MÉTODOS DE GESTOR BIBLIOTECA
     private fun agregarLibro(){
+        println()
         val id = UtilidadesBiblioteca.generarID()
         val titulo = GestorConsola.comprobarTituloDelLibro().capitalizar()
         val autor = GestorConsola.comprobarAutorDelLibro()
@@ -18,41 +21,68 @@ class GestorBiblioteca {
     }
 
     private fun eliminarLibro(){
+        println()
         val idLibro = GestorConsola.comprobarIdDelLibro()
-        catalogoDeLibros.find { it.uuid == idLibro }.let {
-            catalogoDeLibros.remove(it)
-            GestorConsola.mostrarPorConsola("Libro eliminado")
+        if (idLibro != null) {
+            catalogoDeLibros.find { it.mostrarID() == idLibro }.let {
+                catalogoDeLibros.remove(it)
+                GestorConsola.mostrarPorConsola("Libro eliminado")
+            }
+        }else{
+            GestorConsola.mostrarPorConsola("Cancelando...")
         }
     }
 
-    private fun prestarLibro(){
+    private fun prestarLibro(usuario: Usuario){
+        println()
         val idLibro = GestorConsola.comprobarIdDelLibro()
-        catalogoDeLibros.find { it.uuid == idLibro }.let {
-            it!!.estado = EstadosLibros.OCUPADO
-            registorDePrestamos.add(it)
-            GestorConsola.mostrarPorConsola("Libro prestado")
+        if (idLibro != null) {
+            catalogoDeLibros.find { it.mostrarID() == idLibro }.let {
+                it!!.modificarEstado()
+                RegistroPrestamos.registrarPrestamo(it, usuario)
+                GestorConsola.mostrarPorConsola("Libro prestado a ${usuario.nombre}")
+                println()
+            }
+        }
+        else {
+            GestorConsola.mostrarPorConsola("Cancelando...")
+            println()
         }
     }
 
-    private fun devolverLibro(){
+    private fun devolverLibro(usuario: Usuario){
+        println()
         val idLibro = GestorConsola.comprobarIdDelLibro()
-        registorDePrestamos.find { it.uuid == idLibro }.let {
-            it!!.estado = EstadosLibros.DISPONIBLE
-            registorDePrestamos.remove(it)
-            GestorConsola.mostrarPorConsola("Libro devuelto")
+        if (idLibro != null) {
+            RegistroPrestamos.prestamosActuales.find { it.second.mostrarID() == idLibro }.let {
+                it!!.second.modificarEstado()
+                RegistroPrestamos.devolverPrestamo(it.second, it.first)
+                GestorConsola.mostrarPorConsola("Libro devuelto por ${usuario.nombre}")
+            }
+        }
+        else{
+            GestorConsola.mostrarPorConsola("Cancelando...")
+            GestorConsola.mostrarPorConsola("")
         }
     }
 
     private fun comprobarDisponibilidad(){
+        println()
         val idLibro = GestorConsola.comprobarIdDelLibro()
-        catalogoDeLibros.find { it.uuid == idLibro }.let {
-            GestorConsola.mostrarPorConsola("${it!!.titulo} se encuentra ${it.estado.descripcion}")
+        if (idLibro != null) {
+            catalogoDeLibros.find { it.mostrarID() == idLibro }.let {
+                GestorConsola.mostrarPorConsola("${it!!.mostrarTitulo()} se encuentra ${it.mostrarEstado().descripcion}")
+            }
+        }
+        else{
+            GestorConsola.mostrarPorConsola("Cancelando...")
         }
     }
 
     private fun mostrarLibros(){
-        val librosDisponibles = catalogoDeLibros.filter { it.estado == EstadosLibros.DISPONIBLE }
-        val librosOcupados = catalogoDeLibros.filter { it.estado == EstadosLibros.OCUPADO }
+        println()
+        val librosDisponibles = catalogoDeLibros.filter { it.mostrarEstado() == EstadosLibros.DISPONIBLE }
+        val librosOcupados = catalogoDeLibros.filter { it.mostrarEstado() == EstadosLibros.OCUPADO }
         val filtro = GestorConsola.mostrarMenuMostrarLibros()
         when (filtro){
             "todos" -> {
@@ -73,6 +103,32 @@ class GestorBiblioteca {
         }
     }
 
+    //      USUARIOS Y LIBROS
+    fun crearUsuario(): Usuario{
+        println()
+        val id = GestorConsola.pedirIdUsuario()
+        val nombre = GestorConsola.pedirNombreUsuario()
+        val usuario = Usuario(id, nombre)
+        UtilidadesBiblioteca.listaUsuarios.add(usuario)
+        return usuario
+    }
+
+    fun obtenerUsuario():Usuario{
+        println()
+        val id = GestorConsola.pedirId()
+        UtilidadesBiblioteca.listaUsuarios.find { it.id == id }.let {
+            return it!!
+        }
+    }
+
+    fun obtenerLibro():Libro{
+        println()
+        val id = GestorConsola.pedirIdLibro()
+        catalogoDeLibros.find { it.mostrarID() == id }.let {
+            return it!!
+        }
+    }
+
     //      FUNCIONAMIENTO
 
     fun funcionar() {
@@ -83,11 +139,26 @@ class GestorBiblioteca {
             when (eleccion) {
                 1 -> agregarLibro()
                 2 -> eliminarLibro()
-                3 -> prestarLibro()
-                4 -> devolverLibro()
+                3 -> {
+                    val usuario = obtenerUsuario()
+                    prestarLibro(usuario)
+                }
+                4 -> {
+                    val usuario = obtenerUsuario()
+                    devolverLibro(usuario)
+                }
                 5 -> mostrarLibros()
                 6 -> comprobarDisponibilidad()
-                7 -> break
+                7 -> crearUsuario()
+                8 -> {
+                    val libro = obtenerLibro()
+                    RegistroPrestamos.mostrarRegistroEspecifico(libro)
+                }
+                9 -> {
+                    val usuario = obtenerUsuario()
+                    RegistroPrestamos.mostrarRegistroUsuario(usuario)
+                }
+                10 -> break
             }
             println()
         }

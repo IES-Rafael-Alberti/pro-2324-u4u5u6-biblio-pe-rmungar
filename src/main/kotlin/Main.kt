@@ -42,6 +42,11 @@ fun List<Any>.formatear():String{
 }
 
 fun main() {
-    val gestor = GestorBiblioteca()
-    gestor.funcionar()
+    try {
+        val gestor = GestorBiblioteca()
+        gestor.funcionar()
+    }
+    catch (e:Exception) {
+        println(e.message)
+    }
 }

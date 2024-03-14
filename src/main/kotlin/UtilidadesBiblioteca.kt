@@ -6,12 +6,16 @@ import kotlin.random.Random
 class UtilidadesBiblioteca {
     companion object{
         val listaIDs: MutableList<String> = mutableListOf() //Lista para almacenar los ids ya generados
+        val idsUsuarioEnUso = mutableListOf<Int>()
+        val listaUsuarios = mutableListOf<Usuario>()
         fun generarID():String{
             var id:Any = Random.nextInt(100,999)
-            val letrasid = generarLetrasID()
+            var letrasid = generarLetrasID()
             id = "$id-$letrasid"
             while (!comprobarID(id.toString())){
                 id = Random.nextInt(100,999)
+                letrasid = generarLetrasID()
+                id = "$id-$letrasid"
             }
             return id.toString()
         }
