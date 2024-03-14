@@ -1,46 +1,59 @@
 package org.pebiblioteca
 
-import kotlin.io.path.fileVisitor
 
-
-class GestorBiblioteca {
-    private val catalogoDeLibros: MutableList<Libro> = mutableListOf()
+class GestorBiblioteca(val registro: RegistroPrestamos, val catalogo: Catalogo) {
 
 
     //  MÉTODOS DE GESTOR BIBLIOTECA
-    private fun agregarLibro(){
+    private fun agregarElemento(){
         println()
+        val tipoDeElemento = GestorConsola.pedirTipoDeElemento()
         val id = UtilidadesBiblioteca.generarID()
-        val titulo = GestorConsola.comprobarTituloDelLibro().capitalizar()
-        val autor = GestorConsola.comprobarAutorDelLibro()
-        val publicacion = GestorConsola.comprobarPublicacionDelLibro()
+        val titulo = GestorConsola.comprobarTitulo().capitalizar()
+        val autor = GestorConsola.comprobarAutor()
+        val publicacion = GestorConsola.comprobarPublicacion()
 
-        val libro = Libro(id, titulo, autor, publicacion)
-        catalogoDeLibros.add(libro)
-        GestorConsola.mostrarPorConsola("Libro añadido")
+        when(tipoDeElemento){
+            "L" -> {
+                val libro = Libro(id, titulo, autor, publicacion)
+                catalogo.catalogoDeObjetos.add(libro)
+            }
+            "R" -> {
+                val revista = Revista(id, titulo, publicacion)
+                catalogo.catalogoDeObjetos.add(revista)
+            }
+            "D" -> {
+                val dvd = DVD(id, titulo, publicacion)
+                catalogo.catalogoDeObjetos.add(dvd)
+            }
+        }
+        GestorConsola.mostrarPorConsola("Objeto añadido")
+        println()
     }
 
     private fun eliminarLibro(){
         println()
-        val idLibro = GestorConsola.comprobarIdDelLibro()
+        val idLibro = GestorConsola.comprobarIdDelElemento()
         if (idLibro != null) {
-            catalogoDeLibros.find { it.mostrarID() == idLibro }.let {
-                catalogoDeLibros.remove(it)
-                GestorConsola.mostrarPorConsola("Libro eliminado")
+            catalogo.catalogoDeObjetos.find { it.mostrarID() == idLibro }.let {
+                catalogo.catalogoDeObjetos.remove(it)
+                GestorConsola.mostrarPorConsola("Objeto eliminado")
+
             }
         }else{
             GestorConsola.mostrarPorConsola("Cancelando...")
         }
+        println()
     }
 
-    private fun prestarLibro(usuario: Usuario){
+    private fun prestarObjeto(usuario: Usuario){
         println()
-        val idLibro = GestorConsola.comprobarIdDelLibro()
+        val idLibro = GestorConsola.comprobarIdDelElemento()
         if (idLibro != null) {
-            catalogoDeLibros.find { it.mostrarID() == idLibro }.let {
+            catalogo.catalogoDeObjetos.find { it.mostrarID() == idLibro }.let {
                 it!!.modificarEstado()
-                RegistroPrestamos.registrarPrestamo(it, usuario)
-                GestorConsola.mostrarPorConsola("Libro prestado a ${usuario.nombre}")
+                registro.registrarPrestamo(it, usuario)
+                GestorConsola.mostrarPorConsola("Objeto prestado a ${usuario.nombre}")
                 println()
             }
         }
@@ -50,14 +63,20 @@ class GestorBiblioteca {
         }
     }
 
-    private fun devolverLibro(usuario: Usuario){
+    private fun devolverObjeto(usuario: Usuario){
         println()
-        val idLibro = GestorConsola.comprobarIdDelLibro()
-        if (idLibro != null) {
-            RegistroPrestamos.prestamosActuales.find { it.second.mostrarID() == idLibro }.let {
-                it!!.second.modificarEstado()
-                RegistroPrestamos.devolverPrestamo(it.second, it.first)
-                GestorConsola.mostrarPorConsola("Libro devuelto por ${usuario.nombre}")
+        val idObjeto = GestorConsola.comprobarIdDelElemento()
+        if (idObjeto != null) {
+            registro.prestamosActuales.find { it.second.mostrarID() == idObjeto }.let {
+                if (it!!.second is Libro || it.second is Revista) {
+                    it.second.modificarEstado()
+                    registro.devolverPrestamo(it.second, it.first)
+                    GestorConsola.mostrarPorConsola("Objeto devuelto por ${usuario.nombre}")
+                }
+                else{
+                    GestorConsola.mostrarPorConsola("Este objeto no se puede devolver")
+                    println()
+                }
             }
         }
         else{
@@ -68,9 +87,9 @@ class GestorBiblioteca {
 
     private fun comprobarDisponibilidad(){
         println()
-        val idLibro = GestorConsola.comprobarIdDelLibro()
-        if (idLibro != null) {
-            catalogoDeLibros.find { it.mostrarID() == idLibro }.let {
+        val idObjeto = GestorConsola.comprobarIdDelElemento()
+        if (idObjeto != null) {
+            catalogo.catalogoDeObjetos.find { it.mostrarID() == idObjeto }.let {
                 GestorConsola.mostrarPorConsola("${it!!.mostrarTitulo()} se encuentra ${it.mostrarEstado().descripcion}")
             }
         }
@@ -79,14 +98,14 @@ class GestorBiblioteca {
         }
     }
 
-    private fun mostrarLibros(){
+    private fun mostrarObjetos(){
         println()
-        val librosDisponibles = catalogoDeLibros.filter { it.mostrarEstado() == EstadosLibros.DISPONIBLE }
-        val librosOcupados = catalogoDeLibros.filter { it.mostrarEstado() == EstadosLibros.OCUPADO }
-        val filtro = GestorConsola.mostrarMenuMostrarLibros()
+        val librosDisponibles = catalogo.catalogoDeObjetos.filter { it.mostrarEstado() == EstadosLibros.DISPONIBLE }
+        val librosOcupados = catalogo.catalogoDeObjetos.filter { it.mostrarEstado() == EstadosLibros.OCUPADO }
+        val filtro = GestorConsola.mostrarMenuMostrarElementos()
         when (filtro){
             "todos" -> {
-                catalogoDeLibros.forEach {
+                catalogo.catalogoDeObjetos.forEach {
                     GestorConsola.mostrarPorConsola(it.toString())
                 }
             }
@@ -121,10 +140,10 @@ class GestorBiblioteca {
         }
     }
 
-    fun obtenerLibro():Libro{
+    fun obtenerLibro():ElementosBiblioteca{
         println()
-        val id = GestorConsola.pedirIdLibro()
-        catalogoDeLibros.find { it.mostrarID() == id }.let {
+        val id = GestorConsola.pedirIdElemento()
+        catalogo.catalogoDeObjetos.find { it.mostrarID() == id }.let {
             return it!!
         }
     }
@@ -137,26 +156,26 @@ class GestorBiblioteca {
             GestorConsola.mostrarMenuGestorBiblioteca()
             val eleccion = GestorConsola.administrarEleccion()
             when (eleccion) {
-                1 -> agregarLibro()
+                1 -> agregarElemento()
                 2 -> eliminarLibro()
                 3 -> {
                     val usuario = obtenerUsuario()
-                    prestarLibro(usuario)
+                    prestarObjeto(usuario)
                 }
                 4 -> {
                     val usuario = obtenerUsuario()
-                    devolverLibro(usuario)
+                    devolverObjeto(usuario)
                 }
-                5 -> mostrarLibros()
+                5 -> mostrarObjetos()
                 6 -> comprobarDisponibilidad()
                 7 -> crearUsuario()
                 8 -> {
                     val libro = obtenerLibro()
-                    RegistroPrestamos.mostrarRegistroEspecifico(libro)
+                    registro.mostrarRegistroEspecifico(libro)
                 }
                 9 -> {
                     val usuario = obtenerUsuario()
-                    RegistroPrestamos.mostrarRegistroUsuario(usuario)
+                    registro.mostrarRegistroUsuario(usuario)
                 }
                 10 -> break
             }

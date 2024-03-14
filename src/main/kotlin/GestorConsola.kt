@@ -1,13 +1,11 @@
 package org.pebiblioteca
 
-import kotlin.random.Random
-
 object GestorConsola {
 
-    private val pedirTitulo = "Ingrese el título del libro: "
-    private val pedirAutor = "Ingrese el autor del libro: "
+    private val pedirTitulo = "Ingrese el título del objeto: "
+    private val pedirAutor = "Ingrese el autor del objeto: "
     private val pedirPublicacion = "Ingrese la fecha de publicacion con el siguiente formato dd/mm/yyyy: "
-    private val pedirId = "Ingrese el ID del libro: "
+    private val pedirId = "Ingrese el ID del objeto: "
 
 //      PARA MOSTRAR POR PANTALLA   ------------------------------------------------------------------------------------
     fun mostrarPorConsola(texto:String){
@@ -20,12 +18,12 @@ object GestorConsola {
 
     fun mostrarMenuGestorBiblioteca(){
         println("--  GESTOR BIBLIOTECA  --")
-        println("1  -  AÑADIR LIBRO\n2  -  ELIMINAR LIBRO\n3  -  PRESTAR LIBRO\n4  -  DEVOLVER LIBRO\n5  -  MOSTRAR LIBROS\n6  -  COMPROBAR DISPONIBILIDAD\n7  -  CREAR USUARIO\n8  -  MOSTRAR REGISTRO DE UN LIBRO\n9  -  MOSTRAR REGISTRO DE UN USUARIO\n<Enter> : Salir")
+        println("1  -  AÑADIR ELEMENTO\n2  -  ELIMINAR ELEMENTO\n3  -  PRESTAR ELEMENTO\n4  -  DEVOLVER ELEMENTO\n5  -  MOSTRAR ELEMENTO\n6  -  COMPROBAR DISPONIBILIDAD\n7  -  CREAR USUARIO\n8  -  MOSTRAR REGISTRO DE UN ELEMENTO\n9  -  MOSTRAR REGISTRO DE UN USUARIO\n<Enter> : Salir")
     }
 
 //      PARA PEDIR Y COMPROBAR LAS ENTRADAS DEL USUARIO ----------------------------------------------------------------
 
-    fun comprobarTituloDelLibro(): String{
+    fun comprobarTitulo(): String{
         var titulo = ""
         while (titulo.isBlank() && titulo.isEmpty()) {
             mostrarPorConsola(pedirTitulo)
@@ -33,7 +31,7 @@ object GestorConsola {
         }
         return titulo
     }
-    fun comprobarAutorDelLibro(): String{
+    fun comprobarAutor(): String{
         var autor = ""
         while (autor.isBlank() && autor.isEmpty()) {
             mostrarPorConsola(pedirAutor)
@@ -42,7 +40,7 @@ object GestorConsola {
         return autor
     }
 
-    fun comprobarPublicacionDelLibro():String{
+    fun comprobarPublicacion():String{
         var fecha:List<String> = listOf("1","1","1")
         while(fecha[0].toInt() !in 1..31 || fecha[1].toInt() !in 1..12 || fecha[2].toInt() !in 2001..2024){
             mostrarPorConsola(pedirPublicacion)
@@ -51,16 +49,15 @@ object GestorConsola {
         return fecha.formatear()
     }
 
-    fun comprobarIdDelLibro():String?{
+    fun comprobarIdDelElemento():String?{
         var id:String
         mostrarPorConsola(pedirId)
         id = readln()
         if (UtilidadesBiblioteca.listaIDs.isEmpty()){
-            println("No hay libros que prestar")
+            println("No hay objetos que prestar")
             return null
         }
         else{
-
             while (id !in UtilidadesBiblioteca.listaIDs){
                 mostrarPorConsola(pedirId)
                 id = readln()
@@ -72,9 +69,9 @@ object GestorConsola {
         }
     }
 
-//      MOSTRAR LAS COLECCIONES DE LIBROS   ----------------------------------------------------------------------------
+//      MOSTRAR LAS COLECCIONES DE ELEMENTOS   -------------------------------------------------------------------------
 
-    fun mostrarMenuMostrarLibros():String{
+    fun mostrarMenuMostrarElementos():String{
         mostrarPorConsola("Quieres ver: \n1    -   TODOS\n2    -   DISPONIBLES\n3    -   OCUPADOS")
         println()
         mostrarPorConsola("Ingresa el número de la opción: ")
@@ -120,8 +117,8 @@ object GestorConsola {
         return id
     }
 
-    fun pedirIdLibro():String{
-        mostrarPorConsola("Ingrese el id del libro: ")
+    fun pedirIdElemento():String{
+        mostrarPorConsola("Ingrese el id del objeto: ")
         val id = readln()
         return id
     }
@@ -145,6 +142,23 @@ object GestorConsola {
             }
             UtilidadesBiblioteca.idsUsuarioEnUso.add(id.toInt())
             return id.toInt()
+        }
+    }
+
+
+//      ELEMENTOS   ----------------------------------------------------------------------------------------------------
+    fun pedirTipoDeElemento():String{
+        while (true){
+            println()
+            println("Quieres que sea: \n1  -  LIBRO\n2  -  REVISTA\n3  -  DVD")
+            println("Ingresa el numero de la opción deseada: ")
+            val tipo = readln()
+            when(tipo){
+                "1" -> return "L"
+                "2" -> return "R"
+                "3" -> return "D"
+                else -> mostrarEntradaIncorrecta()
+            }
         }
     }
 }
