@@ -79,10 +79,10 @@ object GestorConsola {
 
     fun administrarEleccion():Int{
         var eleccion = ""
-        while (eleccion !in "1".."6"){
+        while (eleccion !in "1".."7"){
             mostrarPorConsola("Ingrese el número de la opcion: ")
             eleccion = readln()
-            if (eleccion == "") return 6
+            if (eleccion == "") return 7
         }
         return eleccion.toInt()
     }
