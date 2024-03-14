@@ -49,11 +49,11 @@ object GestorConsola {
         return fecha.formatear()
     }
 
-    fun comprobarIdDelLibro():Int{
-        var id = 0
-        while (id !in 100..999){
+    fun comprobarIdDelLibro():String{
+        var id = ""
+        while (id !in UtilidadesBiblioteca.listaIDs){
             mostrarPorConsola(pedirId)
-            id = readln().toInt()
+            id = readln()
         }
         return id
     }

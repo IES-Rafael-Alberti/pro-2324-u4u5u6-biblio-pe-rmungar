@@ -25,7 +25,7 @@ class GestorBiblioteca {
     }
     //  MÉTODOS DE GESTOR BIBLIOTECA
     fun agregarLibro(){
-        val id = generarID()
+        val id = UtilidadesBiblioteca.generarID()
         val titulo = GestorConsola.comprobarTituloDelLibro().capitalizar()
         val autor = GestorConsola.comprobarAutorDelLibro()
         val publicacion = GestorConsola.comprobarPublicacionDelLibro()
