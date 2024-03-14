@@ -18,7 +18,7 @@ object GestorConsola {
 
     fun mostrarMenuGestorBiblioteca(){
         println("--  GESTOR BIBLIOTECA  --")
-        println("1  -  AÑADIR LIBRO\n2  -  ELIMINAR LIBRO\n3  -  PRESTAR LIBRO\n4  -  DEVOLVER LIBRO\n5  -  MOSTRAR LIBROS")
+        println("1  -  AÑADIR LIBRO\n2  -  ELIMINAR LIBRO\n3  -  PRESTAR LIBRO\n4  -  DEVOLVER LIBRO\n5  -  MOSTRAR LIBROS\n6  -  COMPROBAR DISPONIBILIDAD\n<Enter> : Salir")
     }
 
 //      PARA PEDIR Y COMPROBAR LAS ENTRADAS DEL USUARIO ----------------------------------------------------------------
@@ -49,11 +49,11 @@ object GestorConsola {
         return fecha.formatear()
     }
 
-    fun comprobarIdDelLibro():Int{
-        var id = 0
-        while (id !in 100..999){
+    fun comprobarIdDelLibro():String{
+        var id = ""
+        while (id !in UtilidadesBiblioteca.listaIDs){
             mostrarPorConsola(pedirId)
-            id = readln().toInt()
+            id = readln()
         }
         return id
     }
@@ -79,10 +79,10 @@ object GestorConsola {
 
     fun administrarEleccion():Int{
         var eleccion = ""
-        while (eleccion !in "1".."6"){
+        while (eleccion !in "1".."7"){
             mostrarPorConsola("Ingrese el número de la opcion: ")
             eleccion = readln()
-            if (eleccion == "") return 6
+            if (eleccion == "") return 7
         }
         return eleccion.toInt()
     }
