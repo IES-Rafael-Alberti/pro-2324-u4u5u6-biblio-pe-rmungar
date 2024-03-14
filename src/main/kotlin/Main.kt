@@ -43,7 +43,9 @@ fun List<Any>.formatear():String{
 
 fun main() {
     try {
-        val gestor = GestorBiblioteca()
+        val catalogo = Catalogo()
+        val registro = RegistroPrestamos()
+        val gestor = GestorBiblioteca(registro, catalogo)
         gestor.funcionar()
     }
     catch (e:Exception) {
