@@ -1,30 +1,12 @@
 package org.pebiblioteca
 
-import kotlin.random.Random
-
 
 class GestorBiblioteca {
-    val catalogoDeLibros: MutableList<Libro> = mutableListOf()
-    val registorDePrestamos: MutableList<Libro> = mutableListOf()
-    private val listaIDs: MutableList<Int> = mutableListOf()
+    private val catalogoDeLibros: MutableList<Libro> = mutableListOf()
+    private val registorDePrestamos: MutableList<Libro> = mutableListOf()
 
-    //  GENERAR IDS PARA LOS LIBROS
-    private fun generarID():Int{
-        var id = Random.nextInt(100,999)
-        while (!comprobarID(id)){
-            id = Random.nextInt(100,999)
-        }
-        return id
-    }
-    private fun comprobarID(id:Int):Boolean{
-        if (listaIDs.contains(id)) return false
-        else {
-            listaIDs.add(id)
-            return true
-        }
-    }
     //  MÉTODOS DE GESTOR BIBLIOTECA
-    fun agregarLibro(){
+    private fun agregarLibro(){
         val id = UtilidadesBiblioteca.generarID()
         val titulo = GestorConsola.comprobarTituloDelLibro().capitalizar()
         val autor = GestorConsola.comprobarAutorDelLibro()
@@ -35,7 +17,7 @@ class GestorBiblioteca {
         GestorConsola.mostrarPorConsola("Libro añadido")
     }
 
-    fun eliminarLibro(){
+    private fun eliminarLibro(){
         val idLibro = GestorConsola.comprobarIdDelLibro()
         catalogoDeLibros.find { it.uuid == idLibro }.let {
             catalogoDeLibros.remove(it)
@@ -43,7 +25,7 @@ class GestorBiblioteca {
         }
     }
 
-    fun prestarLibro(){
+    private fun prestarLibro(){
         val idLibro = GestorConsola.comprobarIdDelLibro()
         catalogoDeLibros.find { it.uuid == idLibro }.let {
             it!!.estado = EstadosLibros.OCUPADO
@@ -52,7 +34,7 @@ class GestorBiblioteca {
         }
     }
 
-    fun devolverLibro(){
+    private fun devolverLibro(){
         val idLibro = GestorConsola.comprobarIdDelLibro()
         registorDePrestamos.find { it.uuid == idLibro }.let {
             it!!.estado = EstadosLibros.DISPONIBLE
@@ -61,14 +43,14 @@ class GestorBiblioteca {
         }
     }
 
-    fun comprobarDisponibilidad(){
+    private fun comprobarDisponibilidad(){
         val idLibro = GestorConsola.comprobarIdDelLibro()
         catalogoDeLibros.find { it.uuid == idLibro }.let {
             GestorConsola.mostrarPorConsola("${it!!.titulo} se encuentra ${it.estado.descripcion}")
         }
     }
 
-    fun mostrarLibros(){
+    private fun mostrarLibros(){
         val librosDisponibles = catalogoDeLibros.filter { it.estado == EstadosLibros.DISPONIBLE }
         val librosOcupados = catalogoDeLibros.filter { it.estado == EstadosLibros.OCUPADO }
         val filtro = GestorConsola.mostrarMenuMostrarLibros()
