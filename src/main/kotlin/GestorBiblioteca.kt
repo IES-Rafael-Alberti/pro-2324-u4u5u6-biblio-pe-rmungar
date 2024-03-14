@@ -104,7 +104,8 @@ class GestorBiblioteca {
                 3 -> prestarLibro()
                 4 -> devolverLibro()
                 5 -> mostrarLibros()
-                6 -> break
+                6 -> comprobarDisponibilidad()
+                7 -> break
             }
             println()
         }

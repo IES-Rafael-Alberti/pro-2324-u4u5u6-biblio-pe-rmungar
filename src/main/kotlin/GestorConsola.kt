@@ -18,7 +18,7 @@ object GestorConsola {
 
     fun mostrarMenuGestorBiblioteca(){
         println("--  GESTOR BIBLIOTECA  --")
-        println("1  -  AÑADIR LIBRO\n2  -  ELIMINAR LIBRO\n3  -  PRESTAR LIBRO\n4  -  DEVOLVER LIBRO\n5  -  MOSTRAR LIBROS")
+        println("1  -  AÑADIR LIBRO\n2  -  ELIMINAR LIBRO\n3  -  PRESTAR LIBRO\n4  -  DEVOLVER LIBRO\n5  -  MOSTRAR LIBROS\n6  -  COMPROBAR DISPONIBILIDAD\n<Enter> : Salir")
     }
 
 //      PARA PEDIR Y COMPROBAR LAS ENTRADAS DEL USUARIO ----------------------------------------------------------------
