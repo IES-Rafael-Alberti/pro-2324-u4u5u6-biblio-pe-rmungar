@@ -1,5 +1,5 @@
 package org.pebiblioteca
 
-class Catalogo {
+object Catalogo {
     val catalogoDeObjetos: MutableList<ElementosBiblioteca> = mutableListOf()
 }
